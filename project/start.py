@@ -46,29 +46,31 @@ while 1:
     #==============================================
     if object_2d_position.all()!=0 :
         _, rvec, tvec = cv2.solvePnP(object_3d_position, object_2d_position, stereo_cam_mt,stereo_cam_ds) 
-        distance = math.sqrt(tvec[0] ** 2 + tvec[1] ** 2 + tvec[2] ** 2) 
+        #distance = math.sqrt(tvec[0] ** 2 + tvec[1] ** 2 + tvec[2] ** 2) 
         rvec_matrix = cv2.Rodrigues(rvec)[0]
         proj_matrix = np.hstack((rvec_matrix, tvec))
         eulerAngles = cv2.decomposeProjectionMatrix(proj_matrix)[6] 
         pitch, yaw, roll = eulerAngles[0], eulerAngles[1], eulerAngles[2]
 #     ========================================================================================
-        #send_data = "Depth_distance: %.2fmm,3d pose: yaw: %.2f, pitch: %.2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        ##send_data = "Depth_distance: %.2fmm,3d pose: yaw: %.2f, pitch: %.2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        ##posList.append(eulerAngles)
         
-        posDic = {}
-        posList = eulerAngles.tolist()
-       
-        #posList.append(eulerAngles)
-        posDic["BallCue"] = posList
-        send_data = json.dumps(posDic)
-        udp_socket.sendto(send_data.encode("utf-8"), (dst_ip, dst_port)).2f, roll: %.2f" % (distance, yaw, pitch, roll)
-        #send_data = "Depth_distance: %.2fmm,3d pose: yaw: %.2f, pitch: %.2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        #posDic = {}
+        #posList = eulerAngles.tolist()
+        #posDic["BallCue"] = posList
+        #send_data = json.dumps(posDic)
+        #udp_socket.sendto(send_data.encode("utf-8"), (dst_ip, dst_port))
         
-        posDic = {}
-        posList = eulerAngles.tolist()
-       
-        #posList.append(eulerAngles)
-        posDic["BallCue"] = posList
-        send_data = json.dumps(posDic)
+        #将旋转向量转到旋转矩阵（罗里格斯变换）rvec->rmat 
+        #rmat = cv2.Rodrigues(rvec);
+        #再由旋转矩阵求得姿态角
+        #theta_z = cv2.fastAtan2(rmat[1][0], rmat[0][0])*57.2958;
+        #theta_y = cv2.fastAtan2(-rmat[2][0], sqrt(rmat[2][0] * rmat[2][0] + rmat[2][2] * rmat[2][2]))*57.2958;
+        #theta_x = cv2.fastAtan2(rmat[2][1], rmat[2][2])*57.2958;
+        #send_data = send_data =" {\"key\":\"fpga_data\",\"rvec\":{\"x\":"+str(rvec[0])+",\"y\":"+str(rvec[1])+",\"z\":"+str(rvec[2])+"},\"tvec\":{\"x\":"+str(tvec[0])+",\"y\":"+str(tvec[1])+",\"z\":"+str(tvec[2])+"}} "
+        #send_data = send_data =" {\"key\":\"fpga_data\",\"rvec\":{\"x\":"+str(theta_x)+",\"y\":"+str(theta_y)+",\"z\":"+str(theta_z)+"},\"tvec\":{\"x\":"+str(tvec[0])+",\"y\":"+str(tvec[1])+",\"z\":"+str(tvec[2])+"}} "
+        send_data = send_data =" {\"key\":\"fpga_data\",\"rvec\":{\"x\":"+str(yaw)+",\"y\":"+str(pitch)+",\"z\":"+str(roll)+"},\"tvec\":{\"x\":"+str(tvec[0])+",\"y\":"+str(tvec[1])+",\"z\":"+str(tvec[2])+"}} "
+        
         udp_socket.sendto(send_data.encode("utf-8"), (dst_ip, dst_port))
     #===============================================
     else:
