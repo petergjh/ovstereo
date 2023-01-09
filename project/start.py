@@ -52,7 +52,23 @@ while 1:
         eulerAngles = cv2.decomposeProjectionMatrix(proj_matrix)[6] 
         pitch, yaw, roll = eulerAngles[0], eulerAngles[1], eulerAngles[2]
 #     ========================================================================================
-        send_data = "Depth_distance: %.2fmm,3d pose: yaw: %.2f, pitch: %.2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        #send_data = "Depth_distance: %.2fmm,3d pose: yaw: %.2f, pitch: %.2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        
+        posDic = {}
+        posList = eulerAngles.tolist()
+       
+        #posList.append(eulerAngles)
+        posDic["BallCue"] = posList
+        send_data = json.dumps(posDic)
+        udp_socket.sendto(send_data.encode("utf-8"), (dst_ip, dst_port)).2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        #send_data = "Depth_distance: %.2fmm,3d pose: yaw: %.2f, pitch: %.2f, roll: %.2f" % (distance, yaw, pitch, roll)
+        
+        posDic = {}
+        posList = eulerAngles.tolist()
+       
+        #posList.append(eulerAngles)
+        posDic["BallCue"] = posList
+        send_data = json.dumps(posDic)
         udp_socket.sendto(send_data.encode("utf-8"), (dst_ip, dst_port))
     #===============================================
     else:
